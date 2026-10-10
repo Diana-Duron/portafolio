@@ -1,6 +1,7 @@
 ---
 import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
+import { withBase } from '../utils/url';
 
 interface Props {
 	title: string;
@@ -15,6 +16,11 @@ const { title } = Astro.props;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{title}</title>
+    <!-- Favicons: con base path el navegador no los encuentra solo en /favicon.ico -->
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')}>
+    <link rel="icon" type="image/png" sizes="96x96" href={withBase('/favicon-96x96.png')}>
+    <link rel="shortcut icon" href={withBase('/favicon.ico')}>
+    <link rel="apple-touch-icon" sizes="180x180" href={withBase('/apple-touch-icon.png')}>
     <ClientRouter />
     
     <!-- Fuentes para el estilo Bauhaus -->

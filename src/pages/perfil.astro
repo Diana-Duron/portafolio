@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 import { getCollection } from 'astro:content';
 import { marked } from 'marked';
+import { withBase } from '../utils/url';
 
 // Obtener datos del perfil
 const perfiles = await getCollection('perfil');
@@ -34,7 +35,7 @@ function formatDate(dateStr: string | undefined) {
     
     <main class="min-h-screen pt-32 pb-24 px-8 md:px-16 max-w-6xl mx-auto">
         <!-- Botón Volver -->
-        <a href="/" class="inline-block mb-12 font-bauhaus text-xl uppercase font-bold text-deep-purple dark:text-pastel-pink border-b-4 border-deep-purple dark:border-pastel-pink hover:bg-pastel-pink dark:hover:bg-pastel-purple dark:hover:text-dark-bg transition-colors">
+        <a href={withBase('/')} class="inline-block mb-12 font-bauhaus text-xl uppercase font-bold text-deep-purple dark:text-pastel-pink border-b-4 border-deep-purple dark:border-pastel-pink hover:bg-pastel-pink dark:hover:bg-pastel-purple dark:hover:text-dark-bg transition-colors">
             ← Inicio
         </a>
 

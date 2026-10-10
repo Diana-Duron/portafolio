@@ -1,6 +1,7 @@
 ---
 // src/components/BlogList.astro
 import { getCollection } from 'astro:content';
+import { withBase } from '../utils/url';
 
 const blogs = await getCollection('blogs');
 // Ordenar por fecha descendente
@@ -47,7 +48,7 @@ const sortedBlogs = blogs.sort((a, b) => {
                         {blog.data.summary}
                     </p>
                     
-                    <a href={`/blog/${blog.data.slug || blog.id}`} class="self-start font-bauhaus font-bold text-xl uppercase border-b-4 border-deep-purple dark:border-pastel-pink hover:bg-pastel-purple dark:hover:bg-pastel-pink dark:hover:text-dark-bg transition-colors">
+                    <a href={withBase(`/blog/${blog.data.slug || blog.id}`)} class="self-start font-bauhaus font-bold text-xl uppercase border-b-4 border-deep-purple dark:border-pastel-pink hover:bg-pastel-purple dark:hover:bg-pastel-pink dark:hover:text-dark-bg transition-colors">
                         Leer más +
                     </a>
                 </div>

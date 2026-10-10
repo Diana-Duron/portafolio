@@ -1,14 +1,15 @@
 ---
 // src/components/Navbar.astro
+import { withBase } from '../utils/url';
 ---
 
 <!-- Barra de Navegación Estilo Bauhaus -->
 <nav
     class="fixed top-0 left-0 w-full z-40 border-b-bauhaus border-deep-purple dark:border-pastel-pink bg-light-bg dark:bg-dark-bg flex justify-between items-center p-4 md:px-12 shadow-sm transition-colors duration-300"
 >
-    <a href="/#home" class="flex items-center space-x-3 group">
+    <a href={withBase('/#home')} class="flex items-center space-x-3 group">
         <img
-            src="/logo.png"
+            src={withBase('/logo.png')}
             alt="DD.DATA Logo"
             class="h-10 md:h-12 w-auto object-contain transition-transform group-hover:scale-105"
         />
@@ -24,31 +25,31 @@
         >
             <li>
                 <a
-                    href="/#home"
+                    href={withBase('/#home')}
                     class="hover:bg-pastel-purple hover:text-deep-purple dark:hover:bg-pastel-pink dark:hover:text-dark-bg px-2 transition-colors"
                     >Inicio</a>
             </li>
             <li>
                 <a
-                    href="/#experience"
+                    href={withBase('/#experience')}
                     class="hover:bg-pastel-pink hover:text-deep-purple dark:hover:bg-pastel-purple dark:hover:text-dark-bg px-2 transition-colors"
                     >Experiencia</a>
             </li>
             <li>
                 <a
-                    href="/#work"
+                    href={withBase('/#work')}
                     class="hover:bg-pastel-purple hover:text-deep-purple dark:hover:bg-pastel-pink dark:hover:text-dark-bg px-2 transition-colors"
                     >Proyectos</a>
             </li>
             <li>
                 <a
-                    href="/#blog"
+                    href={withBase('/#blog')}
                     class="hover:bg-pastel-pink hover:text-deep-purple dark:hover:bg-pastel-purple dark:hover:text-dark-bg px-2 transition-colors"
                     >Blog</a>
             </li>
             <li>
                 <a
-                    href="/perfil"
+                    href={withBase('/perfil')}
                     class="hover:bg-pastel-purple hover:text-deep-purple dark:hover:bg-pastel-pink dark:hover:text-dark-bg px-2 transition-colors border-l-2 border-deep-purple dark:border-pastel-pink ml-2 pl-4"
                     >Perfil</a>
             </li>
@@ -84,11 +85,11 @@
 <!-- Menú Móvil -->
 <div id="mobile-menu" class="fixed inset-0 bg-light-bg dark:bg-dark-bg z-30 hidden flex-col items-center justify-center pt-20 border-b-8 border-deep-purple dark:border-pastel-pink transition-colors">
     <ul class="font-bauhaus text-3xl uppercase font-bold text-center space-y-8">
-        <li><a href="/#home" class="mobile-link hover:text-pastel-purple dark:hover:text-pastel-pink transition-colors">Inicio</a></li>
-        <li><a href="/#experience" class="mobile-link hover:text-pastel-purple dark:hover:text-pastel-pink transition-colors">Experiencia</a></li>
-        <li><a href="/#work" class="mobile-link hover:text-pastel-purple dark:hover:text-pastel-pink transition-colors">Proyectos</a></li>
-        <li><a href="/#blog" class="mobile-link hover:text-pastel-purple dark:hover:text-pastel-pink transition-colors">Blog</a></li>
-        <li><a href="/perfil" class="mobile-link hover:text-pastel-purple dark:hover:text-pastel-pink transition-colors">Perfil</a></li>
+        <li><a href={withBase('/#home')} class="mobile-link hover:text-pastel-purple dark:hover:text-pastel-pink transition-colors">Inicio</a></li>
+        <li><a href={withBase('/#experience')} class="mobile-link hover:text-pastel-purple dark:hover:text-pastel-pink transition-colors">Experiencia</a></li>
+        <li><a href={withBase('/#work')} class="mobile-link hover:text-pastel-purple dark:hover:text-pastel-pink transition-colors">Proyectos</a></li>
+        <li><a href={withBase('/#blog')} class="mobile-link hover:text-pastel-purple dark:hover:text-pastel-pink transition-colors">Blog</a></li>
+        <li><a href={withBase('/perfil')} class="mobile-link hover:text-pastel-purple dark:hover:text-pastel-pink transition-colors">Perfil</a></li>
     </ul>
 </div>
 

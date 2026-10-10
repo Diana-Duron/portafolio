@@ -9,6 +9,11 @@ on:
   push:
     branches: ["main"]
 
+  # Runs when content is published or unpublished in Content Island (GitHub webhook).
+  # The type must match the "Event name" configured in the Content Island webhook.
+  repository_dispatch:
+    types: [deploy-from-content-island]
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 

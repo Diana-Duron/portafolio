@@ -4,6 +4,7 @@ import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
 import { getCollection } from 'astro:content';
 import { marked } from 'marked';
+import { withBase } from '../../utils/url';
 
 export async function getStaticPaths() {
     const blogs = await getCollection('blogs');
@@ -29,7 +30,7 @@ const parsedContent = marked.parse(blog.data.content || 'Sin contenido');
     
     <main class="min-h-screen pt-32 pb-16 px-8 md:px-16 max-w-4xl mx-auto">
         <!-- Botón Volver -->
-        <a href="/#blog" class="inline-block mb-12 font-bauhaus text-xl uppercase font-bold text-deep-purple dark:text-pastel-pink border-b-4 border-deep-purple dark:border-pastel-pink hover:bg-pastel-pink dark:hover:bg-pastel-purple dark:hover:text-dark-bg transition-colors">
+        <a href={withBase('/#blog')} class="inline-block mb-12 font-bauhaus text-xl uppercase font-bold text-deep-purple dark:text-pastel-pink border-b-4 border-deep-purple dark:border-pastel-pink hover:bg-pastel-pink dark:hover:bg-pastel-purple dark:hover:text-dark-bg transition-colors">
             ← Volver al Blog
         </a>
 
