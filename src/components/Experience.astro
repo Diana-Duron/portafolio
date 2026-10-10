@@ -1,0 +1,122 @@
+---
+// src/components/Experience.astro
+import { getCollection } from "astro:content";
+
+const experiencias = await getCollection("experienciasLaborales");
+// Ordenar por fecha de inicio descendente
+const sortedExperiencias = experiencias.sort((a, b) => {
+    const dateA = a.data.startDate ? new Date(a.data.startDate).getTime() : 0;
+    const dateB = b.data.startDate ? new Date(b.data.startDate).getTime() : 0;
+    return dateB - dateA;
+});
+
+function formatDate(dateStr: string | undefined) {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    const month = date.toLocaleString("es-ES", { month: "long" });
+    const year = date.getFullYear();
+    return `${month.charAt(0).toUpperCase() + month.slice(1)} ${year}`;
+}
+---
+
+<!-- Sección 2: Experiencia -->
+<section
+    id="experience"
+    class="min-h-screen relative flex items-center justify-center p-8 border-b-bauhaus border-deep-purple dark:border-pastel-pink bg-white dark:bg-dark-surface transition-colors duration-300"
+>
+    <div
+        class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-16 relative z-10"
+    >
+        <div
+            class="relative min-h-[400px] hidden md:flex items-center justify-center"
+        >
+            <canvas
+                id="experience-panda-canvas"
+                class="w-full h-full absolute inset-0"></canvas>
+        </div>
+
+        <div class="flex flex-col justify-center">
+            <h2
+                class="font-bauhaus text-6xl md:text-8xl mb-12 uppercase text-deep-purple dark:text-light-bg flex flex-col items-start"
+            >
+                <span>Mi</span>
+                <span
+                    class="bg-pastel-purple dark:bg-pastel-purple text-deep-purple px-4 py-2 mt-2 inline-block shadow-[8px_8px_0px_0px_#3B1C4A] dark:shadow-[8px_8px_0px_0px_#FFD1DC]"
+                    >Experiencia</span
+                >
+            </h2>
+
+            <div class="space-y-8">
+                {
+                    sortedExperiencias.map((exp, index) => {
+                        // Alternar iconos Bauhaus
+                        const iconClasses = [
+                            "w-8 h-8 bg-pastel-pink border-2 border-deep-purple dark:border-pastel-pink block transition-colors",
+                            "w-8 h-8 bauhaus-circle bg-pastel-purple border-2 border-deep-purple dark:border-pastel-pink block transition-colors",
+                            "w-8 h-8 border-4 border-deep-purple dark:border-pastel-pink block transform rotate-45 transition-colors",
+                        ];
+                        const icon = iconClasses[index % iconClasses.length];
+
+                        return (
+                            <div class="flex items-start">
+                                <span
+                                    class={`${icon} mr-6 mt-2 flex-shrink-0`}
+                                />
+                                <div>
+                                    <h3 class="font-bauhaus text-2xl uppercase font-bold text-deep-purple dark:text-pastel-pink">
+                                        {exp.data.title}
+                                    </h3>
+                                    <p class="font-body text-lg font-bold mb-1">
+                                        {exp.data.company}
+                                    </p>
+                                    {(exp.data.startDate ||
+                                        exp.data.endDate ||
+                                        exp.data.isCurrent) && (
+                                        <p class="font-body text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                            {formatDate(exp.data.startDate)} -{" "}
+                                            {exp.data.isCurrent
+                                                ? "Actualidad"
+                                                : formatDate(exp.data.endDate)}
+                                        </p>
+                                    )}
+                                    <p class="font-body text-base leading-relaxed border-l-4 border-pastel-pink pl-4 mt-2">
+                                        {exp.data.description}
+                                    </p>
+                                </div>
+                            </div>
+                        );
+                    })
+                }
+
+                {
+                    sortedExperiencias.length === 0 && (
+                        <p class="font-body text-xl leading-relaxed border-l-4 border-pastel-pink pl-6">
+                            (Tu experiencia laboral se mostrará aquí una vez que
+                            la agregues en Content Island).
+                        </p>
+                    )
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    import { mountKawaiiPanda } from "../scripts/kawaiiPanda";
+
+    // Panda kawaii que se arma pieza a pieza (con rebote) al llegar a la sección
+    document.addEventListener("astro:page-load", () => {
+        const canvas = document.querySelector(
+            "#experience-panda-canvas",
+        ) as HTMLCanvasElement | null;
+        const container = canvas?.parentElement;
+        if (!canvas || !container) return;
+
+        mountKawaiiPanda({
+            canvas,
+            host: container,
+            cameraZ: 12,
+            assemble: true,
+        });
+    });
+</script>

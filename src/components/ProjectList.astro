@@ -1,0 +1,70 @@
+---
+// src/components/ProjectList.astro
+import { getCollection } from 'astro:content';
+
+const proyectos = await getCollection('proyectos');
+
+// Ordenamos alfabéticamente por slug (01-, 02-)
+const sortedProjects = proyectos.sort((a, b) => a.id.localeCompare(b.id));
+---
+
+<section id="work" class="relative py-24 px-8 md:px-16 scroll-mt-24 border-b-bauhaus border-deep-purple dark:border-pastel-pink bg-light-bg dark:bg-dark-bg transition-colors duration-300">
+    <h2 class="font-bauhaus text-6xl md:text-8xl text-center mb-16 uppercase text-deep-purple dark:text-light-bg w-full">
+        <span class="border-y-bauhaus border-deep-purple dark:border-pastel-pink px-8 py-2 bg-pastel-pink dark:bg-pastel-pink dark:text-dark-bg shadow-[12px_12px_0px_0px_#3B1C4A] dark:shadow-[12px_12px_0px_0px_#FFD1DC] transition-all">Portafolio</span>
+    </h2>
+
+    <div class="max-w-6xl mx-auto space-y-16">
+        {sortedProjects.map((project, index) => {
+            const isReverse = index % 2 !== 0;
+            
+            return (
+                <div class={`grid grid-cols-1 md:grid-cols-12 gap-8 items-center ${isReverse ? 'md:flex-row-reverse' : ''}`}>
+                    {/* Imagen / Placeholder */}
+                    <div class={`md:col-span-5 relative group ${isReverse ? 'md:order-2 order-1' : ''}`}>
+                        <div class={`absolute inset-0 ${isReverse ? 'bg-pastel-pink transform -translate-x-4 group-hover:-translate-x-6' : 'bg-pastel-purple transform translate-x-4 group-hover:translate-x-6'} border-bauhaus border-deep-purple dark:border-pastel-pink translate-y-4 transition-transform group-hover:translate-y-6`}></div>
+                        <div class={`relative bg-white dark:bg-dark-surface border-bauhaus border-deep-purple dark:border-pastel-pink ${isReverse ? 'aspect-square' : 'aspect-video'} flex items-center justify-center overflow-hidden transition-colors`}>
+                            {project.data.image ? (
+                                <img src={project.data.image.url} alt={project.data.image.name} class="w-full h-full object-cover" />
+                            ) : isReverse ? (
+                                <>
+                                    <div class="w-full h-1/4 bg-deep-purple dark:bg-pastel-purple"></div>
+                                    <div class="absolute w-1/3 h-full bg-pastel-purple dark:bg-pastel-pink border-r-4 border-deep-purple dark:border-pastel-pink left-1/4"></div>
+                                </>
+                            ) : (
+                                <>
+                                    <div class="w-3/4 h-1/2 bg-pastel-pink border-4 border-deep-purple dark:border-pastel-pink transform rotate-12"></div>
+                                    <div class="absolute w-1/2 h-3/4 bg-pastel-purple bauhaus-circle border-4 border-deep-purple dark:border-pastel-pink mix-blend-multiply dark:mix-blend-normal -translate-x-1/4"></div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                    
+                    {/* Texto */}
+                    <div class={`md:col-span-7 ${isReverse ? 'md:pr-12 text-right md:order-1 order-2' : 'md:pl-12'}`}>
+                        {project.data.technologies && project.data.technologies.length > 0 && (
+                            <div class={`font-bauhaus text-xl ${isReverse ? 'text-deep-purple dark:text-dark-bg bg-pastel-purple dark:bg-pastel-purple border-2 border-deep-purple dark:border-transparent' : 'text-pastel-pink dark:text-dark-bg bg-deep-purple dark:bg-pastel-pink'} mb-2 inline-block px-3 py-1 uppercase transition-colors`}>
+                                {project.data.technologies[0]}
+                            </div>
+                        )}
+                        <h3 class="font-bauhaus text-4xl md:text-5xl font-bold uppercase mb-4">{project.data.name || 'Proyecto'}</h3>
+                        <p class={`font-body text-lg mb-6 border-b-2 border-dashed border-deep-purple dark:border-pastel-pink pb-6 ${isReverse ? 'text-left md:text-right' : ''} transition-colors`}>
+                            {project.data.description}
+                        </p>
+                        
+                        {/* Campos extra opcionales */}
+                        {(project.data.repoUrl || project.data.liveUrl) && (
+                            <div class="mb-6 space-y-1">
+                                {project.data.repoUrl && <p class="font-body text-sm"><a href={project.data.repoUrl} target="_blank" rel="noopener noreferrer" class="underline">Ver Repositorio</a></p>}
+                                {project.data.liveUrl && <p class="font-body text-sm"><a href={project.data.liveUrl} target="_blank" rel="noopener noreferrer" class="underline">Ver Sitio Web</a></p>}
+                            </div>
+                        )}
+
+                        <a href={project.data.liveUrl || project.data.repoUrl || '#work'} target="_blank" rel="noopener noreferrer" class={`font-bauhaus font-bold text-xl uppercase border-b-4 border-deep-purple dark:border-pastel-pink ${isReverse ? 'hover:bg-pastel-purple dark:hover:bg-pastel-purple' : 'hover:bg-pastel-pink dark:hover:bg-pastel-pink'} dark:hover:text-dark-bg transition-colors`}>
+                            Ver Detalles +
+                        </a>
+                    </div>
+                </div>
+            );
+        })}
+    </div>
+</section>

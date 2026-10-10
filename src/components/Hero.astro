@@ -1,0 +1,61 @@
+---
+// src/components/Hero.astro
+---
+
+<!-- Sección 1: Hero -->
+<section id="home" class="min-h-screen relative flex items-center justify-center p-8 border-b-bauhaus border-deep-purple dark:border-pastel-pink overflow-hidden transition-colors duration-300">
+    
+    <!-- Canvas 3D de Three.js -->
+    <canvas id="webgl-canvas"></canvas>
+
+    <!-- Cuadrícula de fondo -->
+    <div class="absolute inset-0 grid grid-cols-4 grid-rows-4 gap-0 pointer-events-none opacity-20 dark:opacity-10 z-0">
+        <div class="border-r-2 border-b-2 border-deep-purple dark:border-pastel-pink col-span-2 row-span-2 bg-pastel-purple dark:bg-pastel-purple"></div>
+        <div class="border-b-2 border-deep-purple dark:border-pastel-pink col-span-2 row-span-1"></div>
+        <div class="border-r-2 border-deep-purple dark:border-pastel-pink col-span-1 row-span-3"></div>
+    </div>
+
+    <div class="relative z-10 max-w-6xl w-full grid grid-cols-1 md:grid-cols-12 gap-8 items-center mt-20">
+        <div class="md:col-span-8 flex flex-col items-start">
+            <h2 class="font-body text-xl md:text-2xl font-bold bg-pastel-purple dark:bg-pastel-purple text-deep-purple px-4 py-2 border-bauhaus border-deep-purple dark:border-pastel-pink shadow-[8px_8px_0px_0px_#3B1C4A] dark:shadow-[8px_8px_0px_0px_#FFD1DC] mb-6 transition-all">
+                HOLA, SOY
+            </h2>
+            <h1 class="font-bauhaus text-[4rem] sm:text-7xl md:text-[9rem] leading-[0.9] text-deep-purple dark:text-pastel-pink uppercase tracking-tighter mb-4 z-10 relative">
+                Diana<br>
+                <span class="stroke-bauhaus-thick">Durón</span>
+            </h1>
+            <div class="h-4 w-32 bg-pastel-pink border-y-2 border-deep-purple dark:border-pastel-pink mb-8 transition-colors"></div>
+            <p class="font-body text-2xl max-w-lg bg-white/80 dark:bg-dark-surface/90 backdrop-blur-sm p-4 border-l-bauhaus border-deep-purple dark:border-pastel-pink transition-colors">
+                Analista de Datos y Analista de Credit Force. Especializada en transformar datos complejos en decisiones financieras estratégicas mediante SQL.
+            </p>
+        </div>
+        
+        <div class="md:col-span-4 hidden md:flex justify-end h-full relative">
+            <div class="text-vertical font-bauhaus text-6xl tracking-widest text-deep-purple dark:text-pastel-pink opacity-10 dark:opacity-20 transition-opacity">DATA // SQL</div>
+        </div>
+    </div>
+    
+    <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center animate-bounce">
+        <span class="font-bauhaus uppercase font-bold text-sm tracking-widest mb-2 bg-pastel-pink dark:bg-pastel-purple dark:text-deep-purple px-2 border-2 border-deep-purple dark:border-pastel-pink">Scroll</span>
+        <svg class="w-6 h-6 text-deep-purple dark:text-pastel-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-width="3" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+    </div>
+</section>
+
+<script>
+    import { mountKawaiiPanda } from '../scripts/kawaiiPanda';
+
+    // Panda kawaii en 3D (Three.js): saluda al cargar, te sigue con la mirada y reacciona al clic
+    document.addEventListener('astro:page-load', () => {
+        const canvas = document.querySelector('#webgl-canvas') as HTMLCanvasElement | null;
+        const homeSection = document.querySelector('#home') as HTMLElement | null;
+        if (!canvas || !homeSection) return;
+
+        mountKawaiiPanda({
+            canvas,
+            host: homeSection,
+            cameraZ: 15,
+            // En móvil se asoma arriba, detrás del título; en escritorio va a la derecha
+            placement: () => (window.innerWidth < 768 ? [0, 4, -5] : [4, 0, 0]),
+        });
+    });
+</script>

@@ -1,0 +1,44 @@
+---
+// src/components/Footer.astro
+import { getCollection } from "astro:content";
+
+const perfiles = await getCollection("perfil");
+const perfil = perfiles.length > 0 ? perfiles[0].data : null;
+---
+
+<footer
+    class="bg-deep-purple dark:bg-dark-bg text-pastel-pink p-8 text-center font-body border-t-8 border-pastel-purple dark:border-pastel-pink relative z-10 transition-colors duration-300"
+>
+    <div
+        class="flex justify-center space-x-8 font-bauhaus uppercase text-2xl mb-4"
+    >
+        {
+            perfil?.githubUrl && (
+                <a
+                    href={perfil.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="hover:text-white dark:hover:text-pastel-purple transition-colors"
+                >
+                    GitHub
+                </a>
+            )
+        }
+        {
+            perfil?.linkedinUrl && (
+                <a
+                    href={perfil.linkedinUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="hover:text-white dark:hover:text-pastel-purple transition-colors"
+                >
+                    LinkedIn
+                </a>
+            )
+        }
+    </div>
+    <p>
+        &copy; {new Date().getFullYear()}
+        {perfil?.name || "Diana Durón"} - Data & Credit Force Analyst.
+    </p>
+</footer>

@@ -1,0 +1,18 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-pastel-pink: #FFD1DC;
+  --color-pastel-purple: #E6E6FA;
+  --color-deep-purple: #3B1C4A;
+  --color-light-bg: #FFF5F8;
+  --color-dark-bg: #1A0B2E;
+  --color-dark-surface: #2D153A;
+
+  --font-bauhaus: "Oswald", sans-serif;
+  --font-body: "Space Grotesk", sans-serif;
+
+  /* Para Tailwind v4, si border-bauhaus no funciona con --border-width-bauhaus, usamos el plugin o variables. */
+  --border-width-bauhaus: 6px;
+}

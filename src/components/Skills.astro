@@ -1,0 +1,30 @@
+---
+// src/components/Skills.astro
+import { getCollection } from 'astro:content';
+
+const habilidades = await getCollection('habilidades');
+---
+
+<!-- Sección 3: Habilidades -->
+<section id="skills" class="min-h-[50vh] relative p-8 md:p-16 border-b-bauhaus border-deep-purple dark:border-pastel-pink bg-pastel-pink dark:bg-dark-surface transition-colors duration-300">
+    <div class="max-w-6xl mx-auto">
+        <h2 class="font-bauhaus text-[3rem] sm:text-5xl md:text-7xl mb-8 md:mb-12 uppercase text-deep-purple dark:text-light-bg text-center leading-[1.1]">
+            Habilidades <br class="md:hidden" />
+            <span class="bg-pastel-purple dark:bg-pastel-purple text-deep-purple px-2 inline-block mt-2 md:mt-0">Técnicas</span>
+        </h2>
+        
+        <div class="flex flex-wrap justify-center gap-6">
+            {habilidades.map((skill) => (
+                <div class="font-bauhaus text-xl md:text-2xl font-bold uppercase border-4 border-deep-purple dark:border-pastel-pink bg-white dark:bg-dark-bg text-deep-purple dark:text-light-bg px-6 py-3 shadow-[8px_8px_0px_0px_#3B1C4A] dark:shadow-[8px_8px_0px_0px_#FFD1DC] hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_0px_#3B1C4A] dark:hover:shadow-[4px_4px_0px_0px_#FFD1DC] transition-all cursor-default">
+                    {skill.data.name}
+                </div>
+            ))}
+            
+            {habilidades.length === 0 && (
+                <p class="font-body text-xl font-bold bg-white dark:bg-dark-bg p-4 border-2 border-deep-purple dark:border-pastel-pink">
+                    Tus habilidades aparecerán aquí una vez que las agregues en Content Island.
+                </p>
+            )}
+        </div>
+    </div>
+</section>

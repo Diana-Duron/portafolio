@@ -1,0 +1,217 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css';
+
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title}</title>
+    <ClientRouter />
+    
+    <!-- Fuentes para el estilo Bauhaus -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        import { revealWithHearts } from '../scripts/heartReveal';
+
+        // Configuración de Theme y Toggle
+        const applyTheme = () => {
+            const theme = (() => {
+                if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+                    return localStorage.getItem('theme');
+                }
+                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    return 'dark';
+                }
+                return 'light';
+            })();
+          
+            if (theme === 'light') {
+                document.documentElement.classList.remove('dark');
+            } else {
+                document.documentElement.classList.add('dark');
+            }
+            window.localStorage.setItem('theme', theme);
+        };
+
+        // Se ejecuta al cargar la página por primera vez
+        applyTheme();
+
+        // Se ejecuta después de cada navegación de ClientRouter (View Transitions)
+        document.addEventListener('astro:after-swap', applyTheme);
+
+        // ========================================================
+        // LOGICA DE TRANSICIÓN DE MODO OSCURO (ola de corazones)
+        // ========================================================
+        let themeTransition: ViewTransition | undefined;
+
+        (window as any).toggleTheme = function(event: any) {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+
+            const SWITCH = () => {
+                if (isDark) {
+                    html.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    html.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            };
+
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (!document.startViewTransition || reduceMotion) {
+                SWITCH();
+                return;
+            }
+
+            // Los corazones nacen en el botón (también si se activa con el teclado)
+            const rect = (event?.currentTarget as HTMLElement | undefined)?.getBoundingClientRect();
+            const originX = rect ? rect.left + rect.width / 2 : window.innerWidth;
+            const originY = rect ? rect.top + rect.height / 2 : 0;
+
+            // .theme-hearts apaga el efecto de goteo, que queda para la navegación entre páginas
+            html.classList.add('theme-hearts');
+            const transition = document.startViewTransition(SWITCH);
+            themeTransition = transition;
+            transition.ready.then(() => revealWithHearts(originX, originY)).catch(() => {});
+            const cleanup = () => {
+                if (themeTransition === transition) html.classList.remove('theme-hearts');
+            };
+            transition.finished.then(cleanup, cleanup);
+        }
+    </script>
+</head>
+<body class="font-body relative bg-light-bg text-deep-purple dark:bg-dark-bg dark:text-light-bg transition-colors duration-300">
+    <slot />
+</body>
+</html>
+
+<style is:global>
+    body {
+        overflow-x: hidden;
+        scroll-behavior: smooth;
+    }
+
+    .text-vertical {
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        transform: rotate(180deg);
+    }
+
+    #webgl-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .bauhaus-circle {
+        border-radius: 50%;
+    }
+    
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #FFF5F8; }
+    .dark ::-webkit-scrollbar-track { background: #1A0B2E; }
+    ::-webkit-scrollbar-thumb { background: #E6E6FA; border: 1px solid #3B1C4A; }
+    .dark ::-webkit-scrollbar-thumb { background: #3B1C4A; border: 1px solid #FFD1DC; }
+    ::-webkit-scrollbar-thumb:hover { background: #FFD1DC; }
+
+    .stroke-bauhaus { -webkit-text-stroke: 1px #3B1C4A; }
+    .dark .stroke-bauhaus { -webkit-text-stroke: 1px #FFD1DC; }
+    
+    .stroke-bauhaus-thick { -webkit-text-stroke: 4px #3B1C4A; color: transparent; }
+    .dark .stroke-bauhaus-thick { -webkit-text-stroke: 4px #FFD1DC; color: transparent; }
+
+    .bg-pattern-dots {
+        background-image: linear-gradient(#3B1C4A 2px, transparent 2px), linear-gradient(90deg, #3B1C4A 2px, transparent 2px);
+        background-size: 50px 50px;
+    }
+    .dark .bg-pattern-dots {
+        background-image: linear-gradient(#FFD1DC 2px, transparent 2px), linear-gradient(90deg, #FFD1DC 2px, transparent 2px);
+    }
+
+    /* View Transitions */
+    ::view-transition-group(root) {
+        animation-duration: 1.1s;
+    }
+    ::view-transition-old(root),
+    .dark::view-transition-old(root) {
+        animation: none;
+        z-index: -1;
+    }
+    
+    @property --c1 { inherits: true; initial-value: -15; syntax: '<number>'; }
+    @property --c2 { inherits: true; initial-value: -15; syntax: '<number>'; }
+    @property --c3 { inherits: true; initial-value: -15; syntax: '<number>'; }
+    @property --c4 { inherits: true; initial-value: -15; syntax: '<number>'; }
+    @property --c5 { inherits: true; initial-value: -15; syntax: '<number>'; }
+
+    @keyframes down1 { from { --c1: -15; } to { --c1: 115; } }
+    @keyframes down2 { from { --c2: -15; } to { --c2: 115; } }
+    @keyframes down3 { from { --c3: -15; } to { --c3: 115; } }
+    @keyframes down4 { from { --c4: -15; } to { --c4: 115; } }
+    @keyframes down5 { from { --c5: -15; } to { --c5: 115; } }
+
+    @keyframes up1 { from { --c1: 115; } to { --c1: -15; } }
+    @keyframes up2 { from { --c2: 115; } to { --c2: -15; } }
+    @keyframes up3 { from { --c3: 115; } to { --c3: -15; } }
+    @keyframes up4 { from { --c4: 115; } to { --c4: -15; } }
+    @keyframes up5 { from { --c5: 115; } to { --c5: -15; } }
+
+    .dark::view-transition-new(root) {
+        z-index: 2;
+        animation: 
+            down1 0.7s 0.0s cubic-bezier(0.4, 0, 0.2, 1) both,
+            down2 0.7s 0.1s cubic-bezier(0.4, 0, 0.2, 1) both,
+            down3 0.7s 0.2s cubic-bezier(0.4, 0, 0.2, 1) both,
+            down4 0.7s 0.3s cubic-bezier(0.4, 0, 0.2, 1) both,
+            down5 0.7s 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+        clip-path: polygon(
+            0% 0%, 100% 0%,
+            100% calc(var(--c5) * 1%), 90% calc(var(--c5) * 1% + 8%), 80% calc(var(--c5) * 1%),
+            80% calc(var(--c4) * 1%), 70% calc(var(--c4) * 1% + 8%), 60% calc(var(--c4) * 1%),
+            60% calc(var(--c3) * 1%), 50% calc(var(--c3) * 1% + 8%), 40% calc(var(--c3) * 1%),
+            40% calc(var(--c2) * 1%), 30% calc(var(--c2) * 1% + 8%), 20% calc(var(--c2) * 1%),
+            20% calc(var(--c1) * 1%), 10% calc(var(--c1) * 1% + 8%), 0% calc(var(--c1) * 1%)
+        );
+    }
+
+    /* Cambio de tema: el clip-path de corazones lo anima revealWithHearts() */
+    html.theme-hearts::view-transition-new(root) {
+        animation: none;
+        clip-path: none;
+    }
+
+    ::view-transition-new(root) {
+        z-index: 2;
+        animation:
+            up1 0.7s 0.0s cubic-bezier(0.4, 0, 0.2, 1) both,
+            up2 0.7s 0.1s cubic-bezier(0.4, 0, 0.2, 1) both,
+            up3 0.7s 0.2s cubic-bezier(0.4, 0, 0.2, 1) both,
+            up4 0.7s 0.3s cubic-bezier(0.4, 0, 0.2, 1) both,
+            up5 0.7s 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+        clip-path: polygon(
+            0% 100%, 100% 100%,
+            100% calc(var(--c5) * 1%), 90% calc(var(--c5) * 1% - 8%), 80% calc(var(--c5) * 1%),
+            80% calc(var(--c4) * 1%), 70% calc(var(--c4) * 1% - 8%), 60% calc(var(--c4) * 1%),
+            60% calc(var(--c3) * 1%), 50% calc(var(--c3) * 1% - 8%), 40% calc(var(--c3) * 1%),
+            40% calc(var(--c2) * 1%), 30% calc(var(--c2) * 1% - 8%), 20% calc(var(--c2) * 1%),
+            20% calc(var(--c1) * 1%), 10% calc(var(--c1) * 1% - 8%), 0% calc(var(--c1) * 1%)
+        );
+    }
+</style>

@@ -1,0 +1,71 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection } from 'astro:content';
+import { marked } from 'marked';
+
+export async function getStaticPaths() {
+    const blogs = await getCollection('blogs');
+    
+    return blogs.map(blog => {
+        // Usar slug si existe, si no, el id
+        const pathSlug = blog.data.slug || blog.id;
+        return {
+            params: { slug: pathSlug },
+            props: { blog },
+        };
+    });
+}
+
+const { blog } = Astro.props;
+
+// Convertir Markdown a HTML
+const parsedContent = marked.parse(blog.data.content || 'Sin contenido');
+---
+
+<Layout title={`${blog.data.title} | DD.DATA`}>
+    <Navbar />
+    
+    <main class="min-h-screen pt-32 pb-16 px-8 md:px-16 max-w-4xl mx-auto">
+        <!-- Botón Volver -->
+        <a href="/#blog" class="inline-block mb-12 font-bauhaus text-xl uppercase font-bold text-deep-purple dark:text-pastel-pink border-b-4 border-deep-purple dark:border-pastel-pink hover:bg-pastel-pink dark:hover:bg-pastel-purple dark:hover:text-dark-bg transition-colors">
+            ← Volver al Blog
+        </a>
+
+        <article>
+            <!-- Título y metadatos -->
+            <header class="mb-12">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="font-bauhaus text-sm uppercase bg-deep-purple dark:bg-pastel-pink text-pastel-pink dark:text-dark-bg px-3 py-1 shadow-[4px_4px_0px_0px_#E6E6FA] dark:shadow-[4px_4px_0px_0px_#FFD1DC]">
+                        {blog.data.publishDate ? new Date(blog.data.publishDate).toLocaleDateString() : 'Draft'}
+                    </span>
+                </div>
+                <h1 transition:name={`blog-title-${blog.id}`} class="font-bauhaus text-5xl md:text-7xl font-bold uppercase mb-8 text-deep-purple dark:text-light-bg leading-tight">
+                    {blog.data.title}
+                </h1>
+            </header>
+
+            <!-- Imagen de portada -->
+            {blog.data.coverImage ? (
+                <div class="w-full h-64 md:h-96 border-4 border-deep-purple dark:border-pastel-pink mb-16 overflow-hidden shadow-[16px_16px_0px_0px_#3B1C4A] dark:shadow-[16px_16px_0px_0px_#FFD1DC]">
+                    <img transition:name={`blog-img-${blog.id}`} src={blog.data.coverImage.url} alt={blog.data.coverImage.name} class="w-full h-full object-cover" />
+                </div>
+            ) : (
+                <div transition:name={`blog-img-${blog.id}`} class="w-full h-64 md:h-96 border-4 border-deep-purple dark:border-pastel-pink bg-pastel-pink relative overflow-hidden flex items-center justify-center shadow-[16px_16px_0px_0px_#3B1C4A] dark:shadow-[16px_16px_0px_0px_#FFD1DC] mb-16">
+                    <div class="absolute w-1/2 h-1/2 bg-pastel-purple bauhaus-circle mix-blend-multiply opacity-50"></div>
+                    <span class="font-bauhaus text-5xl font-bold uppercase text-deep-purple relative z-10">BLOG</span>
+                </div>
+            )}
+
+            <!-- Contenido del Post -->
+            <div 
+                class="prose prose-lg dark:prose-invert prose-headings:font-bauhaus prose-headings:uppercase prose-headings:text-deep-purple dark:prose-headings:text-pastel-pink prose-p:font-body prose-a:text-deep-purple dark:prose-a:text-pastel-pink prose-a:font-bold prose-img:border-4 prose-img:border-deep-purple dark:prose-img:border-pastel-pink max-w-none"
+                set:html={parsedContent}
+            >
+            </div>
+        </article>
+    </main>
+
+    <Footer />
+</Layout>

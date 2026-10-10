@@ -1,0 +1,65 @@
+---
+// src/components/BlogList.astro
+import { getCollection } from 'astro:content';
+
+const blogs = await getCollection('blogs');
+// Ordenar por fecha descendente
+const sortedBlogs = blogs.sort((a, b) => {
+    if (!a.data.publishDate) return 1;
+    if (!b.data.publishDate) return -1;
+    return new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime();
+});
+---
+
+<section id="blog" class="min-h-screen relative p-8 md:p-16 border-b-bauhaus border-deep-purple dark:border-pastel-pink bg-light-bg dark:bg-dark-bg transition-colors duration-300">
+    <h2 class="font-bauhaus text-4xl sm:text-6xl md:text-8xl text-center mb-16 md:mb-24 uppercase text-deep-purple dark:text-light-bg w-full leading-tight">
+        <span class="inline-block border-y-bauhaus border-deep-purple dark:border-pastel-pink px-4 md:px-8 py-2 bg-pastel-purple dark:bg-pastel-purple dark:text-dark-bg shadow-[6px_6px_0px_0px_#3B1C4A] md:shadow-[12px_12px_0px_0px_#FFD1DC] transition-all">Últimas <br class="md:hidden" /> Entradas</span>
+    </h2>
+
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+        {sortedBlogs.map((blog) => (
+            <article class="bg-white dark:bg-dark-surface border-4 border-deep-purple dark:border-pastel-pink shadow-[12px_12px_0px_0px_#E6E6FA] dark:shadow-[12px_12px_0px_0px_#FFD1DC] hover:-translate-y-2 hover:shadow-[16px_16px_0px_0px_#E6E6FA] dark:hover:shadow-[16px_16px_0px_0px_#FFD1DC] transition-all duration-300 flex flex-col">
+                
+                {/* Imagen del Blog */}
+                {blog.data.coverImage ? (
+                    <div class="w-full h-48 border-b-4 border-deep-purple dark:border-pastel-pink overflow-hidden">
+                        <img transition:name={`blog-img-${blog.id}`} src={blog.data.coverImage.url} alt={blog.data.coverImage.name} class="w-full h-full object-cover" />
+                    </div>
+                ) : (
+                    <div transition:name={`blog-img-${blog.id}`} class="w-full h-48 border-b-4 border-deep-purple dark:border-pastel-pink bg-pastel-pink relative overflow-hidden flex items-center justify-center">
+                        <div class="absolute w-3/4 h-3/4 bg-pastel-purple bauhaus-circle mix-blend-multiply opacity-50"></div>
+                        <span class="font-bauhaus text-3xl font-bold uppercase text-deep-purple relative z-10">BLOG</span>
+                    </div>
+                )}
+                
+                <div class="p-8 flex-grow flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="font-bauhaus text-sm uppercase bg-deep-purple dark:bg-pastel-pink text-pastel-pink dark:text-dark-bg px-2 py-1">
+                            {blog.data.publishDate ? new Date(blog.data.publishDate).toLocaleDateString() : 'Draft'}
+                        </span>
+                    </div>
+                    
+                    <h3 transition:name={`blog-title-${blog.id}`} class="font-bauhaus text-3xl font-bold uppercase mb-4 text-deep-purple dark:text-pastel-pink leading-tight">
+                        {blog.data.title}
+                    </h3>
+                    
+                    <p class="font-body text-lg mb-8 border-b-2 border-dashed border-deep-purple dark:border-pastel-pink pb-6 flex-grow">
+                        {blog.data.summary}
+                    </p>
+                    
+                    <a href={`/blog/${blog.data.slug || blog.id}`} class="self-start font-bauhaus font-bold text-xl uppercase border-b-4 border-deep-purple dark:border-pastel-pink hover:bg-pastel-purple dark:hover:bg-pastel-pink dark:hover:text-dark-bg transition-colors">
+                        Leer más +
+                    </a>
+                </div>
+            </article>
+        ))}
+
+        {sortedBlogs.length === 0 && (
+            <div class="col-span-full text-center py-12">
+                <p class="font-body text-xl font-bold bg-white dark:bg-dark-bg p-4 inline-block border-2 border-deep-purple dark:border-pastel-pink">
+                    No hay entradas de blog publicadas aún.
+                </p>
+            </div>
+        )}
+    </div>
+</section>

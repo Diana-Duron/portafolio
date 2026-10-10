@@ -1,0 +1,180 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import { getCollection } from 'astro:content';
+import { marked } from 'marked';
+
+// Obtener datos del perfil
+const perfiles = await getCollection('perfil');
+const perfilLight = perfiles.find(p => p.id === '6a53e7157f153fc17ffc4cc6') || perfiles[0];
+const perfilDark = perfiles.find(p => p.id === '6a5440767f153fc17ffc4cf5') || perfiles[0];
+
+const perfil = perfilLight; // Para validar si hay algún perfil en absoluto
+
+// Obtener y ordenar experiencias
+const experiencias = await getCollection("experienciasLaborales");
+const sortedExperiencias = experiencias.sort((a, b) => {
+    const dateA = a.data.startDate ? new Date(a.data.startDate).getTime() : 0;
+    const dateB = b.data.startDate ? new Date(b.data.startDate).getTime() : 0;
+    return dateB - dateA;
+});
+
+function formatDate(dateStr: string | undefined) {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    const month = date.toLocaleString("es-ES", { month: "long" });
+    const year = date.getFullYear();
+    return `${month.charAt(0).toUpperCase() + month.slice(1)} ${year}`;
+}
+---
+
+<Layout title="Perfil | DD.DATA">
+    <Navbar />
+    
+    <main class="min-h-screen pt-32 pb-24 px-8 md:px-16 max-w-6xl mx-auto">
+        <!-- Botón Volver -->
+        <a href="/" class="inline-block mb-12 font-bauhaus text-xl uppercase font-bold text-deep-purple dark:text-pastel-pink border-b-4 border-deep-purple dark:border-pastel-pink hover:bg-pastel-pink dark:hover:bg-pastel-purple dark:hover:text-dark-bg transition-colors">
+            ← Inicio
+        </a>
+
+        {perfil ? (
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                <!-- Perfil Modo Claro -->
+                <div class="lg:col-span-5 flex-col items-center lg:items-start text-center lg:text-left flex dark:hidden">
+                    {/* Avatar Bauhaus */}
+                    <div class="relative mb-8 w-64 h-64 md:w-80 md:h-80 mx-auto lg:mx-0">
+                        <div class="absolute inset-0 bg-pastel-purple bauhaus-circle transform translate-x-4 translate-y-4 shadow-[12px_12px_0px_0px_#3B1C4A] dark:shadow-[12px_12px_0px_0px_#FFD1DC]"></div>
+                        {perfilLight.data.avatar ? (
+                            <img src={perfilLight.data.avatar.url} alt={perfilLight.data.avatar.name} class="absolute inset-0 w-full h-full object-cover bauhaus-circle border-8 border-deep-purple dark:border-pastel-pink z-10" />
+                        ) : (
+                            <div class="absolute inset-0 w-full h-full bg-pastel-pink bauhaus-circle border-8 border-deep-purple dark:border-pastel-pink flex items-center justify-center z-10">
+                                <span class="font-bauhaus font-bold text-4xl text-deep-purple uppercase">Perfil</span>
+                            </div>
+                        )}
+                    </div>
+
+                    <h1 class="font-bauhaus text-5xl md:text-7xl uppercase font-bold text-deep-purple dark:text-light-bg mb-4 leading-none">
+                        {perfilLight.data.name || 'Diana Durón'}
+                    </h1>
+                    
+                    <div class="w-24 h-4 bg-deep-purple dark:bg-pastel-pink mb-8"></div>
+
+                    {perfilLight.data.bio && (
+                        <div class="font-body text-xl md:text-2xl mb-12 leading-relaxed border-l-8 border-pastel-pink dark:border-pastel-purple pl-6">
+                            {perfilLight.data.bio}
+                        </div>
+                    )}
+
+                    {/* Botón Descargar CV */}
+                    {perfilLight.data.cvUrl && (
+                        <a href={perfilLight.data.cvUrl.url} target="_blank" rel="noopener noreferrer" class="group relative inline-flex items-center justify-center bg-deep-purple dark:bg-pastel-pink text-pastel-pink dark:text-dark-bg font-bauhaus text-2xl uppercase font-bold py-4 px-8 border-4 border-deep-purple dark:border-pastel-pink shadow-[12px_12px_0px_0px_#E6E6FA] dark:shadow-[12px_12px_0px_0px_#FFD1DC] hover:translate-y-2 hover:shadow-none transition-all">
+                            <span class="mr-4">Descargar CV</span>
+                            <svg class="w-8 h-8 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="3" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        </a>
+                    )}
+                </div>
+
+                <!-- Perfil Modo Oscuro -->
+                <div class="lg:col-span-5 flex-col items-center lg:items-start text-center lg:text-left hidden dark:flex">
+                    {/* Avatar Bauhaus */}
+                    <div class="relative mb-8 w-64 h-64 md:w-80 md:h-80 mx-auto lg:mx-0">
+                        <div class="absolute inset-0 bg-pastel-purple bauhaus-circle transform translate-x-4 translate-y-4 shadow-[12px_12px_0px_0px_#3B1C4A] dark:shadow-[12px_12px_0px_0px_#FFD1DC]"></div>
+                        {perfilDark.data.avatar ? (
+                            <img src={perfilDark.data.avatar.url} alt={perfilDark.data.avatar.name} class="absolute inset-0 w-full h-full object-cover bauhaus-circle border-8 border-deep-purple dark:border-pastel-pink z-10" />
+                        ) : (
+                            <div class="absolute inset-0 w-full h-full bg-pastel-pink bauhaus-circle border-8 border-deep-purple dark:border-pastel-pink flex items-center justify-center z-10">
+                                <span class="font-bauhaus font-bold text-4xl text-deep-purple uppercase">Perfil</span>
+                            </div>
+                        )}
+                    </div>
+
+                    <h1 class="font-bauhaus text-5xl md:text-7xl uppercase font-bold text-deep-purple dark:text-light-bg mb-4 leading-none">
+                        {perfilDark.data.name || 'Diana Durón'}
+                    </h1>
+                    
+                    <div class="w-24 h-4 bg-deep-purple dark:bg-pastel-pink mb-8"></div>
+
+                    {perfilDark.data.bio && (
+                        <div class="font-body text-xl md:text-2xl mb-12 leading-relaxed border-l-8 border-pastel-pink dark:border-pastel-purple pl-6">
+                            {perfilDark.data.bio}
+                        </div>
+                    )}
+
+                    {/* Botón Descargar CV */}
+                    {perfilDark.data.cvUrl && (
+                        <a href={perfilDark.data.cvUrl.url} target="_blank" rel="noopener noreferrer" class="group relative inline-flex items-center justify-center bg-deep-purple dark:bg-pastel-pink text-pastel-pink dark:text-dark-bg font-bauhaus text-2xl uppercase font-bold py-4 px-8 border-4 border-deep-purple dark:border-pastel-pink shadow-[12px_12px_0px_0px_#E6E6FA] dark:shadow-[12px_12px_0px_0px_#FFD1DC] hover:translate-y-2 hover:shadow-none transition-all">
+                            <span class="mr-4">Descargar CV</span>
+                            <svg class="w-8 h-8 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="3" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        </a>
+                    )}
+                </div>
+
+                <!-- Columna Derecha: Timeline de Experiencia -->
+                <div class="lg:col-span-7 pt-12 lg:pt-0">
+                    <h2 class="font-bauhaus text-4xl md:text-5xl uppercase font-bold text-deep-purple dark:text-light-bg mb-12 flex items-center">
+                        <span class="bg-pastel-purple text-deep-purple px-4 py-2 border-2 border-deep-purple dark:border-pastel-pink shadow-[6px_6px_0px_0px_#3B1C4A] dark:shadow-[6px_6px_0px_0px_#FFD1DC]">
+                            Trayectoria
+                        </span>
+                    </h2>
+
+                    <div class="relative border-l-4 border-deep-purple dark:border-pastel-pink ml-4 md:ml-6 space-y-16 pb-8">
+                        {sortedExperiencias.map((exp, index) => {
+                            const isSquare = index % 3 === 0;
+                            const isTriangle = index % 3 === 1;
+                            
+                            return (
+                                <div class="relative pl-10 md:pl-16">
+                                    {/* Marcador Geométrico */}
+                                    {isSquare ? (
+                                        <div class="absolute -left-[22px] md:-left-[26px] top-1 w-10 h-10 md:w-12 md:h-12 bg-pastel-pink border-4 border-deep-purple dark:border-pastel-pink transition-colors"></div>
+                                    ) : isTriangle ? (
+                                        <div class="absolute -left-[22px] md:-left-[26px] top-1 w-0 h-0 border-l-[20px] border-l-transparent border-r-[20px] border-r-transparent border-b-[34px] border-b-pastel-purple filter drop-shadow-[0_0_0_4px_rgba(59,28,74,1)] dark:drop-shadow-[0_0_0_4px_rgba(255,209,220,1)] transition-colors"></div>
+                                    ) : (
+                                        <div class="absolute -left-[22px] md:-left-[26px] top-1 w-10 h-10 md:w-12 md:h-12 bg-white dark:bg-dark-surface bauhaus-circle border-4 border-deep-purple dark:border-pastel-pink transition-colors"></div>
+                                    )}
+
+                                    {/* Contenido */}
+                                    <div class="bg-white dark:bg-dark-surface p-6 md:p-8 border-4 border-deep-purple dark:border-pastel-pink shadow-[8px_8px_0px_0px_#E6E6FA] dark:shadow-[8px_8px_0px_0px_#FFD1DC] hover:-translate-y-2 hover:shadow-[12px_12px_0px_0px_#E6E6FA] dark:hover:shadow-[12px_12px_0px_0px_#FFD1DC] transition-all">
+                                        <div class="flex flex-col md:flex-row md:justify-between md:items-start mb-4">
+                                            <div>
+                                                <h3 class="font-bauhaus text-2xl md:text-3xl uppercase font-bold text-deep-purple dark:text-pastel-pink leading-tight">
+                                                    {exp.data.title}
+                                                </h3>
+                                                <p class="font-body text-xl font-bold mt-1 text-gray-800 dark:text-gray-200">
+                                                    {exp.data.company}
+                                                </p>
+                                            </div>
+                                            <div class="mt-2 md:mt-0 font-bauhaus text-sm uppercase bg-deep-purple dark:bg-pastel-pink text-pastel-pink dark:text-dark-bg px-3 py-1 self-start shadow-[4px_4px_0px_0px_#E6E6FA] dark:shadow-[4px_4px_0px_0px_#FFD1DC]">
+                                                {formatDate(exp.data.startDate)} - {exp.data.isCurrent ? "Actualidad" : formatDate(exp.data.endDate)}
+                                            </div>
+                                        </div>
+                                        
+                                        <div 
+                                            class="font-body text-lg leading-relaxed mt-4 prose prose-lg dark:prose-invert prose-p:font-body prose-strong:text-deep-purple dark:prose-strong:text-pastel-pink max-w-none"
+                                            set:html={marked.parse(exp.data.description || '')}
+                                        />
+                                    </div>
+                                </div>
+                            );
+                        })}
+                        
+                        {sortedExperiencias.length === 0 && (
+                            <p class="font-body text-xl pl-8 border-l-4 border-pastel-pink ml-8">
+                                La experiencia laboral se mostrará aquí una vez añadida en Content Island.
+                            </p>
+                        )}
+                    </div>
+                </div>
+            </div>
+        ) : (
+            <div class="text-center py-24">
+                <h2 class="font-bauhaus text-4xl uppercase text-deep-purple dark:text-pastel-pink">
+                    No se ha configurado un perfil en Content Island.
+                </h2>
+            </div>
+        )}
+    </main>
+    
+    <Footer />
+</Layout>
